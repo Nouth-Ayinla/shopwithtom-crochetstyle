@@ -24,13 +24,13 @@ const About = () => {
       {/* Main Story */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="bg-sage rounded-2xl aspect-square"></div>
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="bg-sage rounded-2xl aspect-square order-2 lg:order-1"></div>
+            <div className="order-1 lg:order-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                 Hi, I'm Tom
               </h2>
-              <div className="space-y-4 text-muted-foreground text-lg">
+              <div className="space-y-4 text-muted-foreground text-base sm:text-lg">
                 <p>
                   Welcome to Shop With Tom, where every piece tells a story of craftsmanship, 
                   creativity, and the belief that fashion should be as unique as you are.
@@ -69,7 +69,7 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             <Card className="text-center border-none shadow-soft">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
@@ -138,12 +138,12 @@ const About = () => {
               craftsmanship and individuality."
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-accent" asChild>
+              <Button size="lg" className="bg-gradient-accent min-h-[52px]" asChild>
                 <Link to="/shop">
                   Shop Our Collection
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="min-h-[52px]" asChild>
                 <Link to="/contact">
                   Get in Touch
                 </Link>

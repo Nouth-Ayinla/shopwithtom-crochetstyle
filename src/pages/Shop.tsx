@@ -125,13 +125,13 @@ const Shop = () => {
   return (
     <div className="min-h-screen">
       {/* Hero/Header */}
-      <section className="bg-gradient-primary text-primary-foreground py-16">
+      <section className="bg-gradient-primary text-primary-foreground py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
               {currentCategory.name}
             </h1>
-            <p className="text-xl text-primary-foreground/80">
+            <p className="text-lg sm:text-xl text-primary-foreground/80">
               {currentCategory.count} beautiful pieces waiting for you
             </p>
           </div>
@@ -148,31 +148,31 @@ const Shop = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Controls */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <div className="flex items-center gap-3">
                 {/* Mobile Filter */}
                 <Sheet>
                   <SheetTrigger asChild className="lg:hidden">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="min-h-[44px]">
                       <SlidersHorizontal className="h-4 w-4 mr-2" />
                       Filters
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-80">
+                  <SheetContent side="left" className="w-80 sm:w-[400px]">
                     <FilterSidebar />
                   </SheetContent>
                 </Sheet>
 
                 {/* Results count */}
-                <span className="text-muted-foreground">
+                <span className="text-sm sm:text-base text-muted-foreground">
                   {filteredProducts.length} products
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-36 sm:w-40 min-h-[44px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -189,6 +189,7 @@ const Shop = () => {
                     variant={viewMode === "grid" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("grid")}
+                    className="min-h-[44px] min-w-[44px]"
                   >
                     <Grid className="h-4 w-4" />
                   </Button>
@@ -196,6 +197,7 @@ const Shop = () => {
                     variant={viewMode === "list" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("list")}
+                    className="min-h-[44px] min-w-[44px]"
                   >
                     <List className="h-4 w-4" />
                   </Button>

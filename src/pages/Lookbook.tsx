@@ -158,8 +158,8 @@ const Lookbook = () => {
                           View Look
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                           <div className="aspect-[4/5] bg-sage rounded-lg overflow-hidden">
                             <img src={look.image} alt={look.title} className="w-full h-full object-cover" />
                           </div>
@@ -232,12 +232,12 @@ const Lookbook = () => {
               Browse our full collection and mix and match pieces to create a style that's uniquely yours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
+              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary min-h-[52px]" asChild>
                 <Link to="/shop">
                   Shop All Products
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
+              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary min-h-[52px]" asChild>
                 <Link to="/about">
                   Learn Our Story
                 </Link>

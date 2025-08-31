@@ -126,7 +126,7 @@ const ProductDetail = () => {
                     <button
                       key={color.value}
                       onClick={() => setSelectedColor(color.name)}
-                      className={`w-10 h-10 rounded-full border-2 transition-all ${color.color} ${
+                      className={`w-12 h-12 rounded-full border-2 transition-all ${color.color} ${
                         selectedColor === color.name ? "border-primary scale-110" : "border-border hover:border-primary/50"
                       }`}
                       title={color.name}
@@ -155,7 +155,7 @@ const ProductDetail = () => {
 
             {/* Actions */}
             <div className="space-y-3">
-              <Button size="lg" className="w-full bg-gradient-primary text-lg py-6">
+              <Button size="lg" className="w-full bg-gradient-primary text-base sm:text-lg py-4 sm:py-6 min-h-[52px]">
                 <ShoppingBag className="h-5 w-5 mr-2" />
                 Add to Cart
               </Button>
@@ -163,28 +163,28 @@ const ProductDetail = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="w-full"
+                className="w-full min-h-[52px]"
                 onClick={() => setIsWishlisted(!isWishlisted)}
               >
                 <Heart className={`h-5 w-5 mr-2 ${isWishlisted ? "fill-current" : ""}`} />
-                {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                <span className="text-sm sm:text-base">{isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}</span>
               </Button>
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-3 gap-4 py-6 border-y">
-              <div className="text-center">
-                <Truck className="h-8 w-8 mx-auto mb-2 text-primary" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-2 py-6 border-y">
+              <div className="text-center py-2">
+                <Truck className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
                 <p className="text-sm font-medium">Free Shipping</p>
                 <p className="text-xs text-muted-foreground">Orders over $75</p>
               </div>
-              <div className="text-center">
-                <RotateCcw className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <div className="text-center py-2">
+                <RotateCcw className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
                 <p className="text-sm font-medium">Easy Returns</p>
                 <p className="text-xs text-muted-foreground">30-day policy</p>
               </div>
-              <div className="text-center">
-                <Shield className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <div className="text-center py-2">
+                <Shield className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
                 <p className="text-sm font-medium">Quality Guarantee</p>
                 <p className="text-xs text-muted-foreground">Handcrafted</p>
               </div>
@@ -195,10 +195,10 @@ const ProductDetail = () => {
         {/* Product Details Tabs */}
         <div className="mt-16">
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="care">Care Instructions</TabsTrigger>
-              <TabsTrigger value="shipping">Shipping</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
+              <TabsTrigger value="description" className="min-h-[44px] text-sm">Description</TabsTrigger>
+              <TabsTrigger value="care" className="min-h-[44px] text-sm">Care Instructions</TabsTrigger>
+              <TabsTrigger value="shipping" className="min-h-[44px] text-sm">Shipping</TabsTrigger>
             </TabsList>
             
             <TabsContent value="description" className="mt-8">
