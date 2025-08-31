@@ -23,8 +23,8 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <Link to="/" className="flex items-center space-x-2 group">
+            <h1 className="text-2xl font-display font-bold bg-gradient-primary bg-clip-text text-transparent transition-all duration-300 group-hover:scale-105">
               SHOP WITH TOM
             </h1>
           </Link>
@@ -35,9 +35,9 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-accent ${
+                className={`text-sm font-medium transition-all duration-300 link-underline hover:text-accent hover:translate-y-[-1px] ${
                   isActive(item.href)
-                    ? "text-primary border-b-2 border-accent pb-1"
+                    ? "text-primary"
                     : "text-muted-foreground"
                 }`}
               >
@@ -48,15 +48,15 @@ const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hover:scale-110 transition-transform duration-200">
               <Search className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hover:scale-110 transition-transform duration-200">
               <User className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative hover:scale-110 transition-transform duration-200">
               <ShoppingBag className="h-4 w-4" />
-              <span className="absolute -top-2 -right-2 h-4 w-4 bg-accent text-accent-foreground rounded-full text-xs flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 h-4 w-4 bg-accent text-accent-foreground rounded-full text-xs flex items-center justify-center animate-pulse-glow">
                 0
               </span>
             </Button>

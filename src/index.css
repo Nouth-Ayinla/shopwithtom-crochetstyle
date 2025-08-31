@@ -134,6 +134,67 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* Enhanced Button Hover Effects */
+  .btn-hover-lift {
+    @apply transition-all duration-300 hover:translate-y-[-2px] hover:shadow-elegant;
+  }
+
+  .btn-gradient-hover {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-gradient-hover::before {
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] transition-transform duration-700;
+    content: '';
+  }
+
+  .btn-gradient-hover:hover::before {
+    @apply translate-x-[100%];
+  }
+
+  /* Card Hover Effects */
+  .card-hover {
+    @apply transition-all duration-300 hover:translate-y-[-4px] hover:shadow-soft;
+  }
+
+  /* Image Hover Effects */
+  .image-hover-zoom {
+    @apply overflow-hidden;
+  }
+
+  .image-hover-zoom img {
+    @apply transition-transform duration-500 hover:scale-110;
+  }
+
+  /* Text Link Effects */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::after {
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-300;
+    content: '';
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Section Fade In */
+  .section-fade-in {
+    @apply opacity-0 translate-y-8 transition-all duration-700;
+  }
+
+  .section-fade-in.visible {
+    @apply opacity-100 translate-y-0;
   }
 }
