@@ -1,7 +1,9 @@
-import { ArrowRight, Star, Heart, Truck } from "lucide-react";
+import { ArrowRight, Star, Heart, Truck, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 
@@ -12,21 +14,50 @@ const Index = () => {
       name: "Sage Crochet Beanie",
       price: 45,
       image: "/placeholder.svg",
-      category: "crochet-wear"
+      category: "crochet-wear",
+      isNew: true,
+      rating: 4.8,
+      reviews: 24
     },
     {
       id: 2,
       name: "Terracotta Ankle Boots",
       price: 120,
       image: "/placeholder.svg",
-      category: "footwear"
+      category: "footwear",
+      isNew: false,
+      rating: 4.9,
+      reviews: 18
     },
     {
       id: 3,
       name: "Forest Green Scarf",
       price: 55,
       image: "/placeholder.svg",
-      category: "crochet-accessories"
+      category: "crochet-accessories",
+      isNew: true,
+      rating: 4.7,
+      reviews: 32
+    },
+    {
+      id: 4,
+      name: "Cream Oversized Cardigan",
+      price: 85,
+      image: "/placeholder.svg",
+      category: "crochet-wear",
+      isNew: false,
+      rating: 4.8,
+      reviews: 15
+    },
+    {
+      id: 5,
+      name: "Tan Leather Sneakers",
+      price: 95,
+      image: "/placeholder.svg",
+      category: "footwear",
+      isNew: true,
+      rating: 4.6,
+      reviews: 21
     }
   ];
 
@@ -76,7 +107,8 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-8 mb-12">
             {featuredProducts.map((product, index) => (
               <Card 
                 key={product.id} 
@@ -84,19 +116,45 @@ const Index = () => {
                 style={{ animationDelay: `${index * 200}ms` }}
               >
                 <CardContent className="p-0">
-                  <div className="aspect-square bg-sage rounded-t-lg mb-4 image-hover-zoom">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="relative overflow-hidden">
+                    <div className="aspect-square bg-sage rounded-t-lg mb-4 image-hover-zoom">
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {product.isNew && (
+                      <Badge className="absolute top-3 left-3 bg-accent animate-pulse-glow">
+                        New
+                      </Badge>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-3 right-3 bg-background/80 hover:bg-background hover:scale-110 transition-all duration-200"
+                    >
+                      <Heart className="h-4 w-4" />
+                    </Button>
                   </div>
                   <div className="p-6">
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-muted-foreground"
+                          }`}
+                        />
+                      ))}
+                      <span className="text-sm text-muted-foreground ml-2">({product.reviews})</span>
+                    </div>
                     <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors duration-300">{product.name}</h3>
-                    <p className="text-2xl font-bold text-primary">${product.price}</p>
-                    <Button className="w-full mt-4 bg-gradient-primary btn-hover-lift btn-gradient-hover group" asChild>
+                    <p className="text-2xl font-bold text-primary mb-4">${product.price}</p>
+                    <Button className="w-full bg-gradient-primary btn-hover-lift btn-gradient-hover group" asChild>
                       <Link to={`/product/${product.id}`}>
-                        View Details
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        Shop Now
                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </Button>
@@ -106,8 +164,79 @@ const Index = () => {
             ))}
           </div>
 
+          {/* Mobile Carousel */}
+          <div className="block md:hidden mb-12">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2">
+                {featuredProducts.map((product, index) => (
+                  <CarouselItem key={product.id} className="pl-2 basis-4/5 sm:basis-3/5">
+                    <Card className="group cursor-pointer card-hover">
+                      <CardContent className="p-0">
+                        <div className="relative overflow-hidden">
+                          <div className="aspect-square bg-sage rounded-t-lg image-hover-zoom">
+                            <img 
+                              src={product.image} 
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          {product.isNew && (
+                            <Badge className="absolute top-3 left-3 bg-accent animate-pulse-glow">
+                              New
+                            </Badge>
+                          )}
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="absolute top-3 right-3 bg-background/80 hover:bg-background hover:scale-110 transition-all duration-200"
+                          >
+                            <Heart className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        <div className="p-4">
+                          <div className="flex items-center gap-1 mb-2">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${
+                                  i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-muted-foreground"
+                                }`}
+                              />
+                            ))}
+                            <span className="text-xs text-muted-foreground ml-1">({product.reviews})</span>
+                          </div>
+                          
+                          <h3 className="font-semibold text-base mb-2 group-hover:text-primary transition-colors duration-300">
+                            {product.name}
+                          </h3>
+                          <p className="text-xl font-bold text-primary mb-3">${product.price}</p>
+                          
+                          <Button className="w-full bg-gradient-primary btn-hover-lift text-sm min-h-[44px]" asChild>
+                            <Link to={`/product/${product.id}`}>
+                              <ShoppingBag className="h-4 w-4 mr-2" />
+                              Shop Now
+                            </Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex -left-4" />
+              <CarouselNext className="hidden sm:flex -right-4" />
+            </Carousel>
+          </div>
+
           <div className="text-center">
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" className="min-h-[52px]" asChild>
               <Link to="/shop">
                 Shop All Products
                 <ArrowRight className="ml-2 h-4 w-4" />
