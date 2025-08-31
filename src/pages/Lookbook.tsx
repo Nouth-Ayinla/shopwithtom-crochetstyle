@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 
 const Lookbook = () => {
@@ -136,7 +137,8 @@ const Lookbook = () => {
         </div>
 
         {/* Lookbook Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Desktop Grid */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredLooks.map((look) => (
             <Card key={look.id} className="group overflow-hidden hover:shadow-elegant transition-all duration-300">
               <CardContent className="p-0">
@@ -222,6 +224,109 @@ const Lookbook = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Mobile Carousel */}
+        <div className="block md:hidden">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2">
+              {filteredLooks.map((look) => (
+                <CarouselItem key={look.id} className="pl-2 basis-4/5 sm:basis-3/5">
+                  <Card className="group overflow-hidden hover:shadow-elegant transition-all duration-300">
+                    <CardContent className="p-0">
+                      <div className="relative">
+                        <div className="aspect-[4/5] bg-sage overflow-hidden">
+                          <img 
+                            src={look.image} 
+                            alt={look.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        
+                        {/* Overlay with View Details */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Look
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                <div className="aspect-[4/5] bg-sage rounded-lg overflow-hidden">
+                                  <img src={look.image} alt={look.title} className="w-full h-full object-cover" />
+                                </div>
+                                
+                                <div className="space-y-6">
+                                  <div>
+                                    <h2 className="text-2xl font-bold mb-2">{look.title}</h2>
+                                    <p className="text-muted-foreground">{look.description}</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold mb-3">Shop This Look</h3>
+                                    <div className="space-y-3">
+                                      {look.products.map((product) => (
+                                        <div key={product.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                                          <div>
+                                            <p className="font-medium">{product.name}</p>
+                                            <p className="text-sm text-muted-foreground">${product.price}</p>
+                                          </div>
+                                          <Button size="sm" asChild>
+                                            <Link to={`/product/${product.id}`}>
+                                              <ShoppingBag className="h-4 w-4" />
+                                            </Link>
+                                          </Button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <h3 className="font-semibold mb-2">Style Tags</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                      {look.tags.map((tag) => (
+                                        <Badge key={tag} variant="secondary">
+                                          {tag}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4">
+                        <h3 className="font-semibold text-base mb-2">{look.title}</h3>
+                        <p className="text-muted-foreground text-sm mb-3">{look.description}</p>
+                        
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            {look.products.length} pieces
+                          </span>
+                          <Button variant="ghost" size="sm">
+                            <Heart className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden sm:flex -left-4" />
+            <CarouselNext className="hidden sm:flex -right-4" />
+          </Carousel>
         </div>
 
         {/* Call to Action */}

@@ -6,11 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 
 const Shop = () => {
   const { category } = useParams();
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "carousel">("grid");
   const [sortBy, setSortBy] = useState("featured");
 
   const categories = [
@@ -201,55 +202,120 @@ const Shop = () => {
                   >
                     <List className="h-4 w-4" />
                   </Button>
+                  <Button
+                    variant={viewMode === "carousel" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("carousel")}
+                    className="min-h-[44px] min-w-[44px] md:hidden"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </div>
 
-            {/* Products Grid */}
-            <div className={`grid gap-6 ${
-              viewMode === "grid" 
-                ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" 
-                : "grid-cols-1"
-            }`}>
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300">
-                  <CardContent className="p-0">
-                    <div className="relative">
-                      <div className={`${viewMode === "grid" ? "aspect-square" : "aspect-video"} bg-sage rounded-t-lg overflow-hidden`}>
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+            {/* Products Grid/Carousel */}
+            {viewMode === "carousel" ? (
+              <div className="block md:hidden">
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: false,
+                  }}
+                  className="w-full"
+                >
+                  <CarouselContent className="-ml-2">
+                    {filteredProducts.map((product) => (
+                      <CarouselItem key={product.id} className="pl-2 basis-4/5 sm:basis-3/5">
+                        <Card className="group cursor-pointer hover:shadow-elegant transition-all duration-300">
+                          <CardContent className="p-0">
+                            <div className="relative">
+                              <div className="aspect-square bg-sage rounded-t-lg overflow-hidden">
+                                <img 
+                                  src={product.image} 
+                                  alt={product.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                              {product.isNew && (
+                                <Badge className="absolute top-3 left-3 bg-accent">
+                                  New
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            <div className="p-4">
+                              <h3 className="font-semibold text-base mb-2">{product.name}</h3>
+                              <p className="text-xl font-bold text-primary mb-3">${product.price}</p>
+                              
+                              <div className="flex gap-2">
+                                <Button className="flex-1 bg-gradient-primary text-sm min-h-[44px]" asChild>
+                                  <Link to={`/product/${product.id}`}>
+                                    View Details
+                                  </Link>
+                                </Button>
+                                <Button variant="outline" size="icon" className="min-h-[44px] min-w-[44px]">
+                                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                  </svg>
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden sm:flex -left-4" />
+                  <CarouselNext className="hidden sm:flex -right-4" />
+                </Carousel>
+              </div>
+            ) : (
+              <div className={`grid gap-6 ${
+                viewMode === "grid" 
+                  ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" 
+                  : "grid-cols-1"
+              }`}>
+                {filteredProducts.map((product) => (
+                  <Card key={product.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300">
+                    <CardContent className="p-0">
+                      <div className="relative">
+                        <div className={`${viewMode === "grid" ? "aspect-square" : "aspect-video"} bg-sage rounded-t-lg overflow-hidden`}>
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        {product.isNew && (
+                          <Badge className="absolute top-3 left-3 bg-accent">
+                            New
+                          </Badge>
+                        )}
                       </div>
-                      {product.isNew && (
-                        <Badge className="absolute top-3 left-3 bg-accent">
-                          New
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div className="p-6">
-                      <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                      <p className="text-2xl font-bold text-primary mb-4">${product.price}</p>
                       
-                      <div className="flex gap-2">
-                        <Button className="flex-1 bg-gradient-primary" asChild>
-                          <Link to={`/product/${product.id}`}>
-                            View Details
-                          </Link>
-                        </Button>
-                        <Button variant="outline" size="icon">
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                        </Button>
+                      <div className="p-6">
+                        <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                        <p className="text-2xl font-bold text-primary mb-4">${product.price}</p>
+                        
+                        <div className="flex gap-2">
+                          <Button className="flex-1 bg-gradient-primary" asChild>
+                            <Link to={`/product/${product.id}`}>
+                              View Details
+                            </Link>
+                          </Button>
+                          <Button variant="outline" size="icon">
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             {/* Load More */}
             <div className="text-center mt-12">
