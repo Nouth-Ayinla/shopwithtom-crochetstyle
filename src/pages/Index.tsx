@@ -230,8 +230,8 @@ const Index = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden sm:flex -left-4" />
-              <CarouselNext className="hidden sm:flex -right-4" />
+              <CarouselPrevious className="left-2 bg-background/80 hover:bg-background border-2" />
+              <CarouselNext className="right-2 bg-background/80 hover:bg-background border-2" />
             </Carousel>
           </div>
 
