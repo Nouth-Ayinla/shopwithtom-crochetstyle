@@ -9,6 +9,14 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 
+// Product Images
+import sageBeanie from "@/assets/products/sage-crochet-beanie.jpg";
+import terracottaBoots from "@/assets/products/terracotta-ankle-boots.jpg";
+import forestScarf from "@/assets/products/forest-green-scarf.jpg";
+import creamCardigan from "@/assets/products/cream-oversized-cardigan.jpg";
+import tanSneakers from "@/assets/products/tan-leather-sneakers.jpg";
+import yellowTote from "@/assets/products/mustard-yellow-tote-bag.jpg";
+
 const Shop = () => {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
@@ -32,7 +40,7 @@ const Shop = () => {
       name: "Sage Crochet Beanie",
       price: 45,
       category: "crochet-wear",
-      image: "/api/placeholder/400/400",
+      image: sageBeanie,
       isNew: true,
       colors: ["sage", "cream"],
     },
@@ -41,7 +49,7 @@ const Shop = () => {
       name: "Terracotta Ankle Boots",
       price: 120,
       category: "footwear",
-      image: "/api/placeholder/400/400",
+      image: terracottaBoots,
       isNew: false,
       colors: ["terracotta"],
     },
@@ -50,7 +58,7 @@ const Shop = () => {
       name: "Forest Green Scarf",
       price: 55,
       category: "crochet-accessories",
-      image: "/api/placeholder/400/400",
+      image: forestScarf,
       isNew: true,
       colors: ["green"],
     },
@@ -59,7 +67,7 @@ const Shop = () => {
       name: "Cream Oversized Cardigan",
       price: 85,
       category: "crochet-wear",
-      image: "/api/placeholder/400/400",
+      image: creamCardigan,
       isNew: false,
       colors: ["cream"],
     },
@@ -68,7 +76,7 @@ const Shop = () => {
       name: "Tan Leather Sneakers",
       price: 95,
       category: "footwear",
-      image: "/api/placeholder/400/400",
+      image: tanSneakers,
       isNew: false,
       colors: ["tan"],
     },
@@ -77,7 +85,7 @@ const Shop = () => {
       name: "Mustard Yellow Tote Bag",
       price: 35,
       category: "crochet-accessories",
-      image: "/api/placeholder/400/400",
+      image: yellowTote,
       isNew: true,
       colors: ["yellow"],
     },
