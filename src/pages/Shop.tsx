@@ -357,7 +357,8 @@ const Shop = () => {
                     variant={viewMode === "carousel" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setViewMode("carousel")}
-                    className="min-h-[44px] min-w-[44px] md:hidden"
+                    className="min-h-[44px] min-w-[44px]"
+                    title="Carousel View"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                   </Button>
@@ -391,7 +392,7 @@ const Shop = () => {
             {filteredAndSortedProducts.length > 0 && (
               <>
                 {viewMode === "carousel" ? (
-                  <div className="block md:hidden">
+                  <div className="w-full">
                     <Carousel
                       opts={{
                         align: "start",
