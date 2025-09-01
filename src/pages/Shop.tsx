@@ -391,9 +391,9 @@ const Shop = () => {
                       }}
                       className="w-full"
                     >
-                      <CarouselContent className="-ml-2">
+                      <CarouselContent className="-ml-3">
                         {filteredAndSortedProducts.map((product) => (
-                          <CarouselItem key={product.id} className="pl-2 basis-4/5 sm:basis-3/5">
+                          <CarouselItem key={product.id} className="pl-3 basis-1/2">
                             <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300">
                               <CardContent className="p-0">
                                 <div className="relative">
@@ -405,24 +405,24 @@ const Shop = () => {
                                     />
                                   </div>
                                   {product.isNew && (
-                                    <Badge className="absolute top-3 left-3 bg-accent">
+                                    <Badge className="absolute top-2 left-2 bg-accent text-xs">
                                       New
                                     </Badge>
                                   )}
                                 </div>
                                 
-                                <div className="p-4">
-                                  <h3 className="font-semibold text-base mb-2">{product.name}</h3>
-                                  <p className="text-xl font-bold text-primary mb-3">${product.price}</p>
+                                <div className="p-3">
+                                  <h3 className="font-semibold text-sm mb-1">{product.name}</h3>
+                                  <p className="text-lg font-bold text-primary mb-2">${product.price}</p>
                                   
-                                  <div className="flex gap-2">
-                                    <Button className="flex-1 bg-gradient-to-r from-primary to-accent text-sm min-h-[44px]" asChild>
+                                  <div className="flex gap-1">
+                                    <Button className="flex-1 bg-gradient-to-r from-primary to-accent text-xs min-h-[36px]" asChild>
                                       <Link to={`/product/${product.id}`}>
-                                        View Details
+                                        View
                                       </Link>
                                     </Button>
-                                    <Button variant="outline" size="icon" className="min-h-[44px] min-w-[44px]">
-                                      <Heart className="h-4 w-4" />
+                                    <Button variant="outline" size="icon" className="min-h-[36px] min-w-[36px]">
+                                      <Heart className="h-3 w-3" />
                                     </Button>
                                   </div>
                                 </div>
@@ -436,7 +436,7 @@ const Shop = () => {
                     </Carousel>
                   </div>
                 ) : (
-                  <div className={`grid gap-6 ${
+                  <div className={`grid gap-4 ${
                     viewMode === "grid" 
                       ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" 
                       : "grid-cols-1"
