@@ -4,6 +4,7 @@ import { Menu, ShoppingBag, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { useCart } from "@/contexts/CartContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+  const { itemCount } = useCart();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,9 +132,11 @@ const Header = () => {
               aria-label="Shopping cart"
             >
               <ShoppingBag className="h-4 w-4" />
-              <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
-                0
-              </span>
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
             </Button>
           </div>
 
@@ -198,9 +202,11 @@ const Header = () => {
                       aria-label="Shopping cart"
                     >
                       <ShoppingBag className="h-4 w-4" />
-                      <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
-                        0
-                      </span>
+                      {itemCount > 0 && (
+                        <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
+                          {itemCount}
+                        </span>
+                      )}
                     </Button>
                   </div>
                 </nav>

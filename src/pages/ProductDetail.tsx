@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -13,6 +15,8 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addItem } = useCart();
+  const { toast } = useToast();
 
   // Mock product data - in real app, this would come from API
   const product = {
@@ -48,10 +52,35 @@ const ProductDetail = () => {
   };
 
   const relatedProducts = [
-    { id: 2, name: "Forest Green Scarf", price: 55, image: "/placeholder.svg" },
-    { id: 3, name: "Cream Oversized Cardigan", price: 85, image: "/placeholder.svg" },
-    { id: 4, name: "Mustard Yellow Tote Bag", price: 35, image: "/placeholder.svg" }
+    { id: 2, name: "Forest Green Scarf", price: 55, image: "/src/assets/products/forest-green-scarf.jpg" },
+    { id: 3, name: "Cream Oversized Cardigan", price: 85, image: "/src/assets/products/cream-oversized-cardigan.jpg" },
+    { id: 4, name: "Mustard Yellow Tote Bag", price: 35, image: "/src/assets/products/mustard-yellow-tote-bag.jpg" }
   ];
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      toast({
+        title: "Please select a size",
+        description: "Size selection is required to add item to cart",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: "/src/assets/products/sage-crochet-beanie.jpg",
+      color: selectedColor,
+      size: selectedSize,
+    });
+
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart`,
+    });
+  };
 
   return (
     <div className="min-h-screen">
@@ -155,7 +184,11 @@ const ProductDetail = () => {
 
             {/* Actions */}
             <div className="space-y-3">
-              <Button size="lg" className="w-full bg-gradient-primary text-base sm:text-lg py-4 sm:py-6 min-h-[52px]">
+              <Button 
+                size="lg" 
+                className="w-full bg-gradient-primary text-base sm:text-lg py-4 sm:py-6 min-h-[52px]"
+                onClick={handleAddToCart}
+              >
                 <ShoppingBag className="h-5 w-5 mr-2" />
                 Add to Cart
               </Button>
