@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, ShoppingBag, Search } from "lucide-react";
+import { Menu, ShoppingBag, Search, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +15,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { user, isAdmin, signOut } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,6 +127,8 @@ const Header = () => {
                 </Button>
               )}
             </div>
+            
+            {/* Cart */}
             <Button 
               variant="ghost" 
               size="icon" 
@@ -138,6 +143,40 @@ const Header = () => {
                 </span>
               )}
             </Button>
+
+            {/* Auth Menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hover:scale-110 transition-transform duration-200">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                    {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button onClick={() => navigate('/auth')} variant="outline" size="sm">
+                Sign In
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -208,6 +247,49 @@ const Header = () => {
                         </span>
                       )}
                     </Button>
+                  </div>
+                  
+                  {/* Mobile Auth Section */}
+                  <div className="pt-4 border-t">
+                    {user ? (
+                      <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground px-2">{user.email}</div>
+                        {isAdmin && (
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start" 
+                            onClick={() => {
+                              navigate('/admin');
+                              setIsOpen(false);
+                            }}
+                          >
+                            <Settings className="mr-2 h-4 w-4" />
+                            Admin Dashboard
+                          </Button>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-start" 
+                          onClick={() => {
+                            signOut();
+                            setIsOpen(false);
+                          }}
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign Out
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        className="w-full" 
+                        onClick={() => {
+                          navigate('/auth');
+                          setIsOpen(false);
+                        }}
+                      >
+                        Sign In
+                      </Button>
+                    )}
                   </div>
                 </nav>
               </SheetContent>
