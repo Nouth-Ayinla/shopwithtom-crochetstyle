@@ -337,12 +337,12 @@ const Lookbook = () => {
               Browse our full collection and mix and match pieces to create a style that's uniquely yours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary min-h-[52px]" asChild>
+              <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-primary text-lg px-8 py-6 btn-hover-lift" asChild>
                 <Link to="/shop">
                   Shop All Products
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary min-h-[52px]" asChild>
+              <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-primary text-lg px-8 py-6 btn-hover-lift" asChild>
                 <Link to="/about">
                   Learn Our Story
                 </Link>

@@ -88,7 +88,7 @@ const Index = () => {
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 btn-hover-lift" asChild>
+            <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-primary text-lg px-8 py-6 btn-hover-lift" asChild>
               <Link to="/lookbook">
                 View Lookbook
               </Link>
@@ -269,7 +269,7 @@ const Index = () => {
                 </Link>
               </Button>
             </div>
-            <div className="bg-sage rounded-2xl aspect-square animate-fade-in-right animate-float"></div>
+            <div className="bg-sage rounded-2xl aspect-square animate-fade-in-right"></div>
           </div>
         </div>
       </section>
@@ -315,27 +315,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Newsletter Signup */}
-      <section className="py-20 bg-gradient-hero">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto text-white animate-fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Stay in Style</h2>
-            <p className="text-xl mb-8 text-cream/90 leading-relaxed">
-              Get the latest updates on new arrivals, styling tips, and exclusive offers.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="flex-1 bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30 transition-colors duration-300"
-              />
-              <Button size="lg" className="bg-accent hover:bg-accent-soft btn-hover-lift btn-gradient-hover">
-                Subscribe
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
