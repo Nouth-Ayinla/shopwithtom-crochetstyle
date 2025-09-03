@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Filter, Grid, List, SlidersHorizontal, Heart } from "lucide-react";
+import { Grid, List, SlidersHorizontal, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,14 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
-
-// Product Images
-import sageBeanie from "@/assets/products/sage-crochet-beanie.jpg";
-import terracottaBoots from "@/assets/products/terracotta-ankle-boots.jpg";
-import forestScarf from "@/assets/products/forest-green-scarf.jpg";
-import creamCardigan from "@/assets/products/cream-oversized-cardigan.jpg";
-import tanSneakers from "@/assets/products/tan-leather-sneakers.jpg";
-import yellowTote from "@/assets/products/mustard-yellow-tote-bag.jpg";
+import { products, categories } from "@/data/products";
 
 const Shop = () => {
   const { category } = useParams();
@@ -27,69 +20,6 @@ const Shop = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
-  const categories = [
-    { id: "all", name: "All Products", count: 24 },
-    { id: "crochet-wear", name: "Crochet Wear", count: 12 },
-    { id: "crochet-accessories", name: "Crochet Accessories", count: 8 },
-    { id: "footwear", name: "Footwear", count: 4 },
-  ];
-
-  const products = [
-    {
-      id: 1,
-      name: "Sage Crochet Beanie",
-      price: 45,
-      category: "crochet-wear",
-      image: sageBeanie,
-      isNew: true,
-      colors: ["sage", "cream"],
-    },
-    {
-      id: 2,
-      name: "Terracotta Ankle Boots",
-      price: 120,
-      category: "footwear",
-      image: terracottaBoots,
-      isNew: false,
-      colors: ["terracotta"],
-    },
-    {
-      id: 3,
-      name: "Forest Green Scarf",
-      price: 55,
-      category: "crochet-accessories",
-      image: forestScarf,
-      isNew: true,
-      colors: ["green"],
-    },
-    {
-      id: 4,
-      name: "Cream Oversized Cardigan",
-      price: 85,
-      category: "crochet-wear",
-      image: creamCardigan,
-      isNew: false,
-      colors: ["cream"],
-    },
-    {
-      id: 5,
-      name: "Tan Leather Sneakers",
-      price: 95,
-      category: "footwear",
-      image: tanSneakers,
-      isNew: false,
-      colors: ["tan"],
-    },
-    {
-      id: 6,
-      name: "Mustard Yellow Tote Bag",
-      price: 35,
-      category: "crochet-accessories",
-      image: yellowTote,
-      isNew: true,
-      colors: ["yellow"],
-    },
-  ];
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
