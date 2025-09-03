@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, Search, MessageCircle } from "lucide-react";
+import { Menu, ShoppingBag, Search, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +14,8 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+  const { itemCount } = useCart();
+  const { user, isAdmin, signOut } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,17 +128,55 @@ const Header = () => {
               )}
             </div>
             
-            {/* WhatsApp Contact */}
+            {/* Cart */}
             <Button 
-              variant="outline"
-              size="sm"
-              className="hover:scale-110 transition-transform duration-200"
-              onClick={() => window.open('https://wa.me/1234567890?text=Hi! I\'m interested in your products.', '_blank')}
-              aria-label="Contact via WhatsApp"
+              variant="ghost" 
+              size="icon" 
+              className="relative hover:scale-110 transition-transform duration-200"
+              onClick={() => navigate('/cart')}
+              aria-label="Shopping cart"
             >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              WhatsApp
+              <ShoppingBag className="h-4 w-4" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
             </Button>
+
+            {/* Auth Menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hover:scale-110 transition-transform duration-200">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                    {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button onClick={() => navigate('/auth')} variant="outline" size="sm">
+                Sign In
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -188,20 +231,66 @@ const Header = () => {
                       </form>
                     </div>
                     <Button 
-                      variant="outline"
-                      size="sm"
-                      className="hover:scale-110 transition-transform duration-200" 
+                      variant="ghost" 
+                      size="icon" 
+                      className="relative hover:scale-110 transition-transform duration-200" 
                       onClick={() => {
-                        window.open('https://wa.me/1234567890?text=Hi! I\'m interested in your products.', '_blank');
+                        navigate('/cart');
                         setIsOpen(false);
                       }}
-                      aria-label="Contact via WhatsApp"
+                      aria-label="Shopping cart"
                     >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      WhatsApp
+                      <ShoppingBag className="h-4 w-4" />
+                      {itemCount > 0 && (
+                        <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
+                          {itemCount}
+                        </span>
+                      )}
                     </Button>
                   </div>
                   
+                  {/* Mobile Auth Section */}
+                  <div className="pt-4 border-t">
+                    {user ? (
+                      <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground px-2">{user.email}</div>
+                        {isAdmin && (
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start" 
+                            onClick={() => {
+                              navigate('/admin');
+                              setIsOpen(false);
+                            }}
+                          >
+                            <Settings className="mr-2 h-4 w-4" />
+                            Admin Dashboard
+                          </Button>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-start" 
+                          onClick={() => {
+                            signOut();
+                            setIsOpen(false);
+                          }}
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign Out
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        className="w-full" 
+                        onClick={() => {
+                          navigate('/auth');
+                          setIsOpen(false);
+                        }}
+                      >
+                        Sign In
+                      </Button>
+                    )}
+                  </div>
                 </nav>
               </SheetContent>
             </Sheet>
