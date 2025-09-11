@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Filter, Grid, List, SlidersHorizontal, Heart, MessageCircle } from "lucide-react";
+import { Grid, List, SlidersHorizontal, Heart, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,12 +18,12 @@ const Shop = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list" | "carousel">("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   const categories = [
     { id: "all", name: "All Products", count: products.length },
     { id: "baby-crochet", name: "Baby Crochet", count: products.filter(p => p.category === "baby-crochet").length },
     { id: "slides", name: "Slides", count: products.filter(p => p.category === "slides").length },
+    { id: "crochet-accessories", name: "Crochet Accessories", count: products.filter(p => p.category === "crochet-accessories").length },
   ];
 
   const handleWhatsAppContact = (product: any) => {
@@ -52,23 +52,16 @@ const Shop = () => {
     if (selectedPriceRange) {
       filtered = filtered.filter(product => {
         switch (selectedPriceRange) {
-          case "under-50":
-            return product.price < 50;
-          case "50-100":
-            return product.price >= 50 && product.price <= 100;
-          case "over-100":
-            return product.price > 100;
+          case "under-30":
+            return product.price < 30;
+          case "30-35":
+            return product.price >= 30 && product.price <= 35;
+          case "over-35":
+            return product.price > 35;
           default:
             return true;
         }
       });
-    }
-
-    // Filter by colors
-    if (selectedColors.length > 0) {
-      filtered = filtered.filter(product =>
-        product.colors?.some(color => selectedColors.includes(color)) || false
-      );
     }
 
     // Sort products
@@ -87,26 +80,9 @@ const Shop = () => {
     });
 
     return sorted;
-  }, [category, searchQuery, selectedPriceRange, selectedColors, sortBy]);
+  }, [category, searchQuery, selectedPriceRange, sortBy]);
 
   const currentCategory = categories.find(cat => cat.id === category) || categories[0];
-
-  const handleColorToggle = (color: string) => {
-    setSelectedColors(prev =>
-      prev.includes(color)
-        ? prev.filter(c => c !== color)
-        : [...prev, color]
-    );
-  };
-
-  const colorOptions = [
-    { name: "Sage", value: "sage", class: "bg-green-300" },
-    { name: "Cream", value: "cream", class: "bg-amber-50" },
-    { name: "Terracotta", value: "terracotta", class: "bg-orange-400" },
-    { name: "Green", value: "green", class: "bg-green-600" },
-    { name: "Tan", value: "tan", class: "bg-yellow-600" },
-    { name: "Yellow", value: "yellow", class: "bg-yellow-400" },
-  ];
 
   const FilterSidebar = () => (
     <div className="space-y-6">
@@ -144,9 +120,9 @@ const Shop = () => {
         <h3 className="font-semibold mb-4">Price Range</h3>
         <div className="space-y-2">
           {[
-            { label: "Under $50", value: "under-50" },
-            { label: "$50 - $100", value: "50-100" },
-            { label: "Over $100", value: "over-100" },
+            { label: "Under $30", value: "under-30" },
+            { label: "$30 - $35", value: "30-35" },
+            { label: "Over $35", value: "over-35" },
           ].map((range) => (
             <Button
               key={range.value}
@@ -162,33 +138,14 @@ const Shop = () => {
         </div>
       </div>
 
-      <div>
-        <h3 className="font-semibold mb-4">Color</h3>
-        <div className="grid grid-cols-3 gap-2">
-          {colorOptions.map((color) => (
-            <button
-              key={color.value}
-              onClick={() => handleColorToggle(color.value)}
-              className={`w-full h-12 rounded-md ${color.class} border-2 transition-all ${
-                selectedColors.includes(color.value)
-                  ? "border-primary ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
-              }`}
-              title={color.name}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* Clear Filters */}
-      {(selectedPriceRange || selectedColors.length > 0) && (
+      {selectedPriceRange && (
         <div className="pt-4 border-t">
           <Button
             variant="outline"
             className="w-full"
             onClick={() => {
               setSelectedPriceRange(null);
-              setSelectedColors([]);
             }}
           >
             Clear Filters
@@ -320,7 +277,6 @@ const Shop = () => {
                   variant="outline"
                   onClick={() => {
                     setSelectedPriceRange(null);
-                    setSelectedColors([]);
                   }}
                 >
                   Clear All Filters
@@ -365,10 +321,12 @@ const Shop = () => {
                                   <p className="text-lg font-bold text-primary mb-2">${product.price}</p>
                                   
                                   <div className="flex gap-1">
-                                    <Button className="flex-1 bg-gradient-to-r from-primary to-accent text-xs min-h-[36px]" asChild>
-                                      <Link to={`/product/${product.id}`}>
-                                        View
-                                      </Link>
+                                    <Button 
+                                      className="flex-1 bg-gradient-to-r from-primary to-accent text-xs min-h-[36px]" 
+                                      onClick={() => handleWhatsAppContact(product)}
+                                    >
+                                      <MessageCircle className="h-3 w-3 mr-1" />
+                                      WhatsApp
                                     </Button>
                                     <Button variant="outline" size="icon" className="min-h-[36px] min-w-[36px]">
                                       <Heart className="h-3 w-3" />
@@ -406,20 +364,43 @@ const Shop = () => {
                                 New
                               </Badge>
                             )}
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="absolute top-3 right-3 bg-background/80 hover:bg-background hover:scale-110 transition-all duration-200"
+                            >
+                              <Heart className="h-4 w-4" />
+                            </Button>
                           </div>
                           
-                          <div className="p-6">
-                            <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                            <p className="text-2xl font-bold text-primary mb-4">${product.price}</p>
+                          <div className={`${viewMode === "grid" ? "p-6" : "p-4 flex items-center justify-between"}`}>
+                            <div className={viewMode === "list" ? "flex-1" : ""}>
+                              <h3 className={`font-semibold group-hover:text-primary transition-colors duration-300 ${
+                                viewMode === "grid" ? "text-lg mb-2" : "text-base mb-1"
+                              }`}>
+                                {product.name}
+                              </h3>
+                              <p className={`font-bold text-primary ${
+                                viewMode === "grid" ? "text-2xl mb-4" : "text-xl"
+                              }`}>
+                                ${product.price}
+                              </p>
+                              {viewMode === "list" && product.description && (
+                                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                  {product.description}
+                                </p>
+                              )}
+                            </div>
                             
-                            <div className="flex gap-2">
-                              <Button className="flex-1 bg-gradient-to-r from-primary to-accent" asChild>
-                                <Link to={`/product/${product.id}`}>
-                                  View Details
-                                </Link>
-                              </Button>
-                              <Button variant="outline" size="icon">
-                                <Heart className="h-4 w-4" />
+                            <div className={`${viewMode === "list" ? "ml-4 flex gap-2" : ""}`}>
+                              <Button 
+                                className={`bg-gradient-primary btn-hover-lift btn-gradient-hover group ${
+                                  viewMode === "grid" ? "w-full" : "min-w-[120px]"
+                                }`}
+                                onClick={() => handleWhatsAppContact(product)}
+                              >
+                                <MessageCircle className="h-4 w-4 mr-2" />
+                                Contact on WhatsApp
                               </Button>
                             </div>
                           </div>
@@ -428,13 +409,6 @@ const Shop = () => {
                     ))}
                   </div>
                 )}
-
-                {/* Load More */}
-                <div className="text-center mt-12">
-                  <Button size="lg" variant="outline">
-                    Load More Products
-                  </Button>
-                </div>
               </>
             )}
           </div>
