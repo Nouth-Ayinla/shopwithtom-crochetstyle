@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { products } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -18,21 +18,33 @@ const ProductDetail = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addItem } = useCart();
   const { toast } = useToast();
+  const { products, loading } = useProducts();
 
-  const product = products.find(p => p.id === parseInt(id || "1"));
+  const product = products.find(p => p.id === id);
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading product...</p>
+        </div>
+      </div>
+    );
+  }
   
   if (!product) {
     return <div className="min-h-screen flex items-center justify-center"><h1>Product not found</h1></div>;
   }
 
-  const relatedProducts = products.filter(p => p.id !== product.id).slice(0, 3);
+  const relatedProducts = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 3);
 
   const handleAddToCart = () => {
     addItem({
-      id: product.id,
+      id: parseInt(product.id),
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: product.image || '/placeholder.svg',
       color: selectedColor,
       size: selectedSize,
     });
@@ -51,7 +63,7 @@ const ProductDetail = () => {
           <div className="space-y-4">
             <div className="aspect-square bg-sage rounded-xl overflow-hidden">
               <img 
-                src={product.image} 
+                src={product.image || '/placeholder.svg'} 
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -66,15 +78,14 @@ const ProductDetail = () => {
               </div>
               <h1 className="text-3xl md:text-4xl font-bold mb-4">{product.name}</h1>
               
-              {/* Price */}
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-3xl font-bold text-primary">${product.price}</span>
+                <span className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</span>
               </div>
             </div>
 
             {/* Product info */}
             <div className="space-y-4">
-              <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+              <p className="text-muted-foreground leading-relaxed">{product.description || "No description available."}</p>
             </div>
 
             {/* Actions */}
@@ -133,7 +144,7 @@ const ProductDetail = () => {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-3">About This Product</h3>
-                  <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                  <p className="text-muted-foreground leading-relaxed">{product.description || "No description available."}</p>
                 </div>
               </div>
             </TabsContent>
@@ -161,20 +172,20 @@ const ProductDetail = () => {
             {relatedProducts.map((relatedProduct) => (
               <Card key={relatedProduct.id} className="group cursor-pointer hover:shadow-elegant transition-all duration-300">
                 <CardContent className="p-0">
-                  <div className="aspect-square bg-sage rounded-t-lg overflow-hidden">
-                    <img 
-                      src={relatedProduct.image} 
-                      alt={relatedProduct.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-semibold text-lg mb-2">{relatedProduct.name}</h3>
-                    <p className="text-2xl font-bold text-primary">${relatedProduct.price}</p>
-                    <Button className="w-full mt-4 bg-gradient-primary">
-                      View Details
-                    </Button>
-                  </div>
+                    <div className="aspect-square bg-sage rounded-t-lg overflow-hidden">
+                      <img 
+                        src={relatedProduct.image || '/placeholder.svg'} 
+                        alt={relatedProduct.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="font-semibold text-lg mb-2">{relatedProduct.name}</h3>
+                      <p className="text-2xl font-bold text-primary">${relatedProduct.price.toFixed(2)}</p>
+                      <Button className="w-full mt-4 bg-gradient-primary">
+                        View Details
+                      </Button>
+                    </div>
                 </CardContent>
               </Card>
             ))}

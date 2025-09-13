@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, ShoppingBag, Search } from "lucide-react";
+import { Menu, ShoppingBag, Search, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +15,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { user, signOut, isAdmin } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +49,11 @@ const Header = () => {
       setIsSearchOpen(false);
       setSearchQuery("");
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
   };
 
   const navigation = [
@@ -86,59 +94,95 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            {/* Search */}
-            <div className="relative">
-              {isSearchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center">
-                  <Input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onBlur={handleSearchBlur}
-                    onKeyDown={handleKeyDown}
-                    className="w-64 h-9 text-sm transition-all duration-300 focus:w-72"
-                    autoFocus
-                  />
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center space-x-4">
+              {/* Search */}
+              <div className="relative">
+                {isSearchOpen ? (
+                  <form onSubmit={handleSearch} className="flex items-center">
+                    <Input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onBlur={handleSearchBlur}
+                      onKeyDown={handleKeyDown}
+                      className="w-64 h-9 text-sm transition-all duration-300 focus:w-72"
+                      autoFocus
+                    />
+                    <Button 
+                      type="submit"
+                      variant="ghost" 
+                      size="icon"
+                      className="ml-1 h-9 w-9 hover:scale-110 transition-transform duration-200"
+                      aria-label="Submit search"
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </form>
+                ) : (
                   <Button 
-                    type="submit"
                     variant="ghost" 
-                    size="icon"
-                    className="ml-1 h-9 w-9 hover:scale-110 transition-transform duration-200"
-                    aria-label="Submit search"
+                    size="icon" 
+                    className="hover:scale-110 transition-transform duration-200"
+                    onClick={handleSearchIconClick}
+                    aria-label="Open search"
                   >
                     <Search className="h-4 w-4" />
                   </Button>
-                </form>
+                )}
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative hover:scale-110 transition-transform duration-200"
+                onClick={() => navigate('/cart')}
+                aria-label="Shopping cart"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
+              </Button>
+
+              {/* User Menu */}
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="hover:scale-110 transition-transform duration-200">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => navigate('/profile')} disabled>
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Settings className="h-4 w-4 mr-2" />
+                        Admin Panel
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="hover:scale-110 transition-transform duration-200"
-                  onClick={handleSearchIconClick}
-                  aria-label="Open search"
+                  variant="outline" 
+                  onClick={() => navigate('/auth')}
+                  className="hover:scale-105 transition-transform duration-200"
                 >
-                  <Search className="h-4 w-4" />
+                  Sign In
                 </Button>
               )}
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative hover:scale-110 transition-transform duration-200"
-              onClick={() => navigate('/cart')}
-              aria-label="Shopping cart"
-            >
-              <ShoppingBag className="h-4 w-4" />
-              {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 h-4 w-4 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
-                  {itemCount}
-                </span>
-              )}
-            </Button>
-          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
@@ -208,6 +252,46 @@ const Header = () => {
                         </span>
                       )}
                     </Button>
+                  </div>
+
+                  {/* Mobile User Menu */}
+                  <div className="pt-6 mt-6 border-t">
+                    {user ? (
+                      <div className="space-y-2">
+                        {isAdmin && (
+                          <Link
+                            to="/admin"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center space-x-2 text-lg font-medium text-muted-foreground hover:text-primary py-2"
+                          >
+                            <Settings className="h-4 w-4" />
+                            <span>Admin Panel</span>
+                          </Link>
+                        )}
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            handleSignOut();
+                            setIsOpen(false);
+                          }}
+                          className="w-full justify-start"
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign Out
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          navigate('/auth');
+                          setIsOpen(false);
+                        }}
+                        className="w-full"
+                      >
+                        Sign In
+                      </Button>
+                    )}
                   </div>
                 </nav>
               </SheetContent>

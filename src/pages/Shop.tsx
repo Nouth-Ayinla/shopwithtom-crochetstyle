@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Grid, List, SlidersHorizontal, Heart, MessageCircle, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
-import { products } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,6 +22,7 @@ const Shop = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
   const { addItem } = useCart();
   const { toast } = useToast();
+  const { products, loading, error } = useProducts();
 
   const categories = [
     { id: "all", name: "All Products", count: products.length },
@@ -35,9 +36,9 @@ const Shop = () => {
     window.open(`https://wa.me/+2348012345678?text=${message}`, '_blank');
   };
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  const handleAddToCart = (product: any) => {
     addItem({
-      id: product.id,
+      id: parseInt(product.id),
       name: product.name,
       price: product.price,
       image: product.image,
@@ -51,6 +52,8 @@ const Shop = () => {
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
+    if (loading || !products) return [];
+    
     let filtered = products;
 
     // Filter by category
@@ -98,7 +101,7 @@ const Shop = () => {
     });
 
     return sorted;
-  }, [category, searchQuery, selectedPriceRange, sortBy]);
+  }, [category, searchQuery, selectedPriceRange, sortBy, products, loading]);
 
   const currentCategory = categories.find(cat => cat.id === category) || categories[0];
 
@@ -186,6 +189,28 @@ const Shop = () => {
     }
     return `${filteredAndSortedProducts.length} beautiful pieces waiting for you`;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-4">Error loading products: {error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
