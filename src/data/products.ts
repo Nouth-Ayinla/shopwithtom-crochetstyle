@@ -16,26 +16,26 @@ export const products: Product[] = [
   {
     id: 1,
     name: "Purple Baby Crochet Set",
-    price: 45,
+    price: 21000,
     image: "/lovable-uploads/6fc85f4c-c2a9-4c2f-8478-0708a47bc3ae.png",
     category: "baby-crochet",
     isNew: true,
     rating: 4.9,
     reviews: 28,
     description: "Complete baby crochet set including romper, bonnet, and booties in beautiful purple. Perfect for special occasions or photo shoots.",
-    whatsappMessage: "Hi! I'm interested in the Purple Baby Crochet Set for $45. Can you tell me more about sizing and availability?"
+    whatsappMessage: "Hi! I'm interested in the Purple Baby Crochet Set for #21000. Can you tell me more about sizing and availability?"
   },
   {
     id: 2,
-    name: "Black Bow Slides",
-    price: 25,
+    name: "Black Bow  Female Slides",
+    price: 9000,
     image: "/lovable-uploads/0d32d7be-e67d-4d5b-8bb4-2140e495e3b3.png",
     category: "slides",
     isNew: false,
     rating: 4.7,
     reviews: 35,
     description: "Comfortable black slides with elegant bow detail. Perfect for casual outings or relaxing at home.",
-    whatsappMessage: "Hi! I'd like to order the Black Bow Slides for $25. What sizes do you have available?"
+    whatsappMessage: "Hi! I'd like to order the Black Bow Female Slides for #9000. What sizes do you have available?"
   },
   {
     id: 3,

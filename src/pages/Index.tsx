@@ -1,20 +1,65 @@
-import { ArrowRight, Star, Heart, Truck, ShoppingBag, MessageCircle } from "lucide-react";
+import { ArrowRight, Star, Heart, Truck, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
-import { getFeaturedProducts } from "@/data/products";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Index = () => {
-  const featuredProducts = getFeaturedProducts();
-
-  const handleWhatsAppContact = (product: any) => {
-    const message = encodeURIComponent(product.whatsappMessage || `Hi! I'm interested in ${product.name} for $${product.price}. Is it available?`);
-    window.open(`https://wa.me/+2348012345678?text=${message}`, '_blank');
-  };
+  const featuredProducts = [
+    {
+      id: 1,
+      name: "Sage Crochet Beanie",
+      price: 45,
+      image: "/placeholder.svg",
+      category: "crochet-wear",
+      isNew: true,
+      rating: 4.8,
+      reviews: 24
+    },
+    {
+      id: 2,
+      name: "Terracotta Ankle Boots",
+      price: 120,
+      image: "/placeholder.svg",
+      category: "footwear",
+      isNew: false,
+      rating: 4.9,
+      reviews: 18
+    },
+    {
+      id: 3,
+      name: "Forest Green Scarf",
+      price: 55,
+      image: "/placeholder.svg",
+      category: "crochet-accessories",
+      isNew: true,
+      rating: 4.7,
+      reviews: 32
+    },
+    {
+      id: 4,
+      name: "Cream Oversized Cardigan",
+      price: 85,
+      image: "/placeholder.svg",
+      category: "crochet-wear",
+      isNew: false,
+      rating: 4.8,
+      reviews: 15
+    },
+    {
+      id: 5,
+      name: "Tan Leather Sneakers",
+      price: 95,
+      image: "/placeholder.svg",
+      category: "footwear",
+      isNew: true,
+      rating: 4.6,
+      reviews: 21
+    }
+  ];
 
   return (
     <div className="space-y-0">
@@ -106,13 +151,12 @@ const Index = () => {
                     </div>
                     <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors duration-300">{product.name}</h3>
                     <p className="text-2xl font-bold text-primary mb-4">${product.price}</p>
-                    <Button 
-                      className="w-full bg-gradient-primary btn-hover-lift btn-gradient-hover group" 
-                      onClick={() => handleWhatsAppContact(product)}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Contact on WhatsApp
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <Button className= "border-white text-black hover:bg-white hover:text-primary text-lg px-8 py-6 btn-hover-lift" asChild >
+                      <Link to={`/product/${product.id}`}>
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        Shop Now
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -174,12 +218,11 @@ const Index = () => {
                           </h3>
                           <p className="text-xl font-bold text-primary mb-3">${product.price}</p>
                           
-                          <Button 
-                            className="w-full bg-gradient-primary btn-hover-lift text-sm min-h-[44px]" 
-                            onClick={() => handleWhatsAppContact(product)}
-                          >
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            Contact on WhatsApp
+                          <Button className="w-full bg-gradient-primary btn-hover-lift text-sm min-h-[44px]" asChild>
+                            <Link to={`/product/${product.id}`}>
+                              <ShoppingBag className="h-4 w-4 mr-2" />
+                              Shop Now
+                            </Link>
                           </Button>
                         </div>
                       </CardContent>

@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
@@ -19,22 +22,33 @@ const Shop = () => {
   
   const [viewMode, setViewMode] = useState<"grid" | "list" | "carousel">("grid");
   const [sortBy, setSortBy] = useState("featured");
-  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(50000);
+  const [priceRange, setPriceRange] = useState([0, 50000]);
   const { addItem } = useCart();
   const { toast } = useToast();
   const { products, loading, error } = useProducts();
 
+  // Calculate min and max prices from products
+  useEffect(() => {
+    if (products && products.length > 0) {
+      const prices = products.map(p => p.price);
+      const min = 0;
+      const max = Math.max(...prices);
+      setMinPrice(min);
+      setMaxPrice(max);
+      setPriceRange([min, max]);
+    }
+  }, [products]);
+
   const categories = [
     { id: "all", name: "All Products", count: products.length },
     { id: "baby-crochet", name: "Baby Crochet", count: products.filter(p => p.category === "baby-crochet").length },
-    { id: "slides", name: "Slides", count: products.filter(p => p.category === "slides").length },
+    { id: "male-slides", name: "Male Slides", count: products.filter(p => p.category === "male-slides").length },
+    { id: "female-slides", name: "Female Slides", count: products.filter(p => p.category === "female-slides").length },
+    { id: "unisex-slides", name: "Unisex Slides", count: products.filter(p => p.category === "unisex-slides").length },
     { id: "crochet-accessories", name: "Crochet Accessories", count: products.filter(p => p.category === "crochet-accessories").length },
   ];
-
-  const handleWhatsAppContact = (product: any) => {
-    const message = encodeURIComponent(product.whatsappMessage || `Hi! I'm interested in ${product.name} for $${product.price}. Is it available?`);
-    window.open(`https://wa.me/+2348012345678?text=${message}`, '_blank');
-  };
 
   const handleAddToCart = (product: any) => {
     addItem({
@@ -70,20 +84,9 @@ const Shop = () => {
     }
 
     // Filter by price range
-    if (selectedPriceRange) {
-      filtered = filtered.filter(product => {
-        switch (selectedPriceRange) {
-          case "under-30":
-            return product.price < 30;
-          case "30-35":
-            return product.price >= 30 && product.price <= 35;
-          case "over-35":
-            return product.price > 35;
-          default:
-            return true;
-        }
-      });
-    }
+    filtered = filtered.filter(product => 
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
 
     // Sort products
     const sorted = [...filtered].sort((a, b) => {
@@ -101,7 +104,7 @@ const Shop = () => {
     });
 
     return sorted;
-  }, [category, searchQuery, selectedPriceRange, sortBy, products, loading]);
+  }, [category, searchQuery, priceRange, sortBy, products, loading]);
 
   const currentCategory = categories.find(cat => cat.id === category) || categories[0];
 
@@ -138,38 +141,56 @@ const Shop = () => {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-4">Price Range</h3>
-        <div className="space-y-2">
-          {[
-            { label: "Under $30", value: "under-30" },
-            { label: "$30 - $35", value: "30-35" },
-            { label: "Over $35", value: "over-35" },
-          ].map((range) => (
-            <Button
-              key={range.value}
-              variant={selectedPriceRange === range.value ? "default" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setSelectedPriceRange(
-                selectedPriceRange === range.value ? null : range.value
-              )}
-            >
-              {range.label}
-            </Button>
-          ))}
+        <h3 className="font-semibold mb-4">Price Range (₦)</h3>
+        <div className="space-y-4">
+          <Slider
+            min={minPrice}
+            max={maxPrice}
+            step={100}
+            value={priceRange}
+            onValueChange={setPriceRange}
+            className="my-4"
+          />
+          <div className="flex justify-between text-sm">
+            <span>₦{priceRange[0].toLocaleString()}</span>
+            <span>₦{priceRange[1].toLocaleString()}</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-2">
+              <Label htmlFor="min-price" className="text-xs">Min Price</Label>
+              <Input
+                id="min-price"
+                type="number"
+                value={priceRange[0]}
+                onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                className="h-8 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="max-price" className="text-xs">Max Price</Label>
+              <Input
+                id="max-price"
+                type="number"
+                value={priceRange[1]}
+                onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                className="h-8 text-sm"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Clear Filters */}
-      {selectedPriceRange && (
+      {(priceRange[0] !== minPrice || priceRange[1] !== maxPrice) && (
         <div className="pt-4 border-t">
           <Button
             variant="outline"
             className="w-full"
             onClick={() => {
-              setSelectedPriceRange(null);
+              setPriceRange([minPrice, maxPrice]);
             }}
           >
-            Clear Filters
+            Clear Price Filter
           </Button>
         </div>
       )}
@@ -319,7 +340,7 @@ const Shop = () => {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setSelectedPriceRange(null);
+                    setPriceRange([minPrice, maxPrice]);
                   }}
                 >
                   Clear All Filters
@@ -361,7 +382,7 @@ const Shop = () => {
                                 
                                 <div className="p-3">
                                   <h3 className="font-semibold text-sm mb-1">{product.name}</h3>
-                                  <p className="text-lg font-bold text-primary mb-2">${product.price}</p>
+                                  <p className="text-lg font-bold text-primary mb-2">₦{product.price.toLocaleString()}</p>
                                   
                                   <div className="flex gap-1">
                                     <Button 
@@ -371,16 +392,7 @@ const Shop = () => {
                                       <ShoppingBag className="h-3 w-3 mr-1" />
                                       Add to Cart
                                     </Button>
-                                    <Button 
-                                      className="flex-1 bg-gradient-to-r from-primary to-accent text-xs min-h-[36px]" 
-                                      onClick={() => handleWhatsAppContact(product)}
-                                    >
-                                      <MessageCircle className="h-3 w-3 mr-1" />
-                                      WhatsApp
-                                    </Button>
-                                    <Button variant="outline" size="icon" className="min-h-[36px] min-w-[36px]">
-                                      <Heart className="h-3 w-3" />
-                                    </Button>
+                                    
                                   </div>
                                 </div>
                               </CardContent>
@@ -433,7 +445,7 @@ const Shop = () => {
                               <p className={`font-bold text-primary ${
                                 viewMode === "grid" ? "text-2xl mb-4" : "text-xl"
                               }`}>
-                                ${product.price}
+                                ₦{product.price.toLocaleString()}
                               </p>
                               {viewMode === "list" && product.description && (
                                 <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
@@ -452,16 +464,7 @@ const Shop = () => {
                                 <ShoppingBag className="h-4 w-4 mr-2" />
                                 Add to Cart
                               </Button>
-                              <Button 
-                                variant="outline"
-                                className={`${
-                                  viewMode === "grid" ? "w-full" : "min-w-[120px]"
-                                }`}
-                                onClick={() => handleWhatsAppContact(product)}
-                              >
-                                <MessageCircle className="h-4 w-4 mr-2" />
-                                WhatsApp
-                              </Button>
+                              
                             </div>
                           </div>
                         </CardContent>

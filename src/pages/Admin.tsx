@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Package, DollarSign, Image, FileText } from "lucide-react";
+import { Plus, Trash2, Edit, Package, DollarSign, Image, FileText, Tag, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,13 +26,24 @@ interface Product {
   updated_at: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  created_at: string;
+}
+
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [formData, setFormData] = useState({
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [productFormData, setProductFormData] = useState({
     name: "",
     description: "",
     price: "",
@@ -39,6 +51,12 @@ const Admin = () => {
     image_url: "",
     stock_quantity: ""
   });
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: "",
+    slug: "",
+    description: ""
+  });
+  const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
   // Redirect if not admin
@@ -49,6 +67,7 @@ const Admin = () => {
   useEffect(() => {
     if (user && isAdmin) {
       fetchProducts();
+      fetchCategories();
     }
   }, [user, isAdmin]);
 
@@ -79,8 +98,33 @@ const Admin = () => {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch categories",
+          variant: "destructive",
+        });
+      } else {
+        setCategories(data || []);
+      }
+    } catch (error) {
+      toast({
+        title: "Error", 
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resetProductForm = () => {
+    setProductFormData({
       name: "",
       description: "",
       price: "",
@@ -91,10 +135,59 @@ const Admin = () => {
     setEditingProduct(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const resetCategoryForm = () => {
+    setCategoryFormData({
+      name: "",
+      slug: "",
+      description: ""
+    });
+    setEditingCategory(null);
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `product-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      setProductFormData({...productFormData, image_url: publicUrl});
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.price || !formData.category) {
+    if (!productFormData.name || !productFormData.price || !productFormData.category) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields",
@@ -104,12 +197,12 @@ const Admin = () => {
     }
 
     const productData = {
-      name: formData.name,
-      description: formData.description || null,
-      price: parseFloat(formData.price),
-      category: formData.category,
-      image_url: formData.image_url || null,
-      stock_quantity: formData.stock_quantity ? parseInt(formData.stock_quantity) : 0
+      name: productFormData.name,
+      description: productFormData.description || null,
+      price: parseFloat(productFormData.price),
+      category: productFormData.category,
+      image_url: productFormData.image_url || null,
+      stock_quantity: productFormData.stock_quantity ? parseInt(productFormData.stock_quantity) : 0
     };
 
     try {
@@ -142,8 +235,8 @@ const Admin = () => {
           description: `Product ${editingProduct ? 'updated' : 'created'} successfully`,
         });
         
-        setIsDialogOpen(false);
-        resetForm();
+        setIsProductDialogOpen(false);
+        resetProductForm();
         fetchProducts();
       }
     } catch (error) {
@@ -155,9 +248,70 @@ const Admin = () => {
     }
   };
 
-  const handleEdit = (product: Product) => {
+  const handleCategorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!categoryFormData.name || !categoryFormData.slug) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const categoryData = {
+      name: categoryFormData.name,
+      slug: categoryFormData.slug,
+      description: categoryFormData.description || null,
+    };
+
+    try {
+      let error;
+      
+      if (editingCategory) {
+        // Update existing category
+        const { error: updateError } = await supabase
+          .from('categories')
+          .update(categoryData)
+          .eq('id', editingCategory.id);
+        error = updateError;
+      } else {
+        // Create new category
+        const { error: insertError } = await supabase
+          .from('categories')
+          .insert([categoryData]);
+        error = insertError;
+      }
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: `Category ${editingCategory ? 'updated' : 'created'} successfully`,
+        });
+        
+        setIsCategoryDialogOpen(false);
+        resetCategoryForm();
+        fetchCategories();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    setFormData({
+    setProductFormData({
       name: product.name,
       description: product.description || "",
       price: product.price.toString(),
@@ -165,10 +319,20 @@ const Admin = () => {
       image_url: product.image_url || "",
       stock_quantity: product.stock_quantity?.toString() || "0"
     });
-    setIsDialogOpen(true);
+    setIsProductDialogOpen(true);
   };
 
-  const handleDelete = async (productId: string) => {
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    setCategoryFormData({
+      name: category.name,
+      slug: category.slug,
+      description: category.description || ""
+    });
+    setIsCategoryDialogOpen(true);
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
     if (!confirm("Are you sure you want to delete this product?")) {
       return;
     }
@@ -201,6 +365,39 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteCategory = async (categoryId: string) => {
+    if (!confirm("Are you sure you want to delete this category? Products using this category will need to be updated.")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', categoryId);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete category",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Category deleted successfully",
+        });
+        fetchCategories();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -219,12 +416,12 @@ const Admin = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold">Admin Panel</h1>
-            <p className="text-muted-foreground">Manage your products and inventory</p>
+            <p className="text-muted-foreground">Manage your products and categories</p>
           </div>
           
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-primary" onClick={() => resetForm()}>
+              <Button className="bg-gradient-primary" onClick={() => resetProductForm()}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
@@ -237,28 +434,28 @@ const Admin = () => {
                 </DialogDescription>
               </DialogHeader>
               
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleProductSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Product Name *</Label>
                     <Input
                       id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      value={productFormData.name}
+                      onChange={(e) => setProductFormData({...productFormData, name: e.target.value})}
                       placeholder="Enter product name"
                       required
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price *</Label>
+                    <Label htmlFor="price">Price (₦) *</Label>
                     <Input
                       id="price"
                       type="number"
                       step="0.01"
                       min="0"
-                      value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
+                      value={productFormData.price}
+                      onChange={(e) => setProductFormData({...productFormData, price: e.target.value})}
                       placeholder="0.00"
                       required
                     />
@@ -268,14 +465,19 @@ const Admin = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category *</Label>
-                    <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                    <Select 
+                      value={productFormData.category} 
+                      onValueChange={(value) => setProductFormData({...productFormData, category: value})}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="baby-crochet">Baby Crochet</SelectItem>
-                        <SelectItem value="slides">Slides</SelectItem>
-                        <SelectItem value="crochet-accessories">Crochet Accessories</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.slug}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -286,37 +488,67 @@ const Admin = () => {
                       id="stock"
                       type="number"
                       min="0"
-                      value={formData.stock_quantity}
-                      onChange={(e) => setFormData({...formData, stock_quantity: e.target.value})}
+                      value={productFormData.stock_quantity}
+                      onChange={(e) => setProductFormData({...productFormData, stock_quantity: e.target.value})}
                       placeholder="0"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="image_url">Image URL</Label>
-                  <Input
-                    id="image_url"
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <Label htmlFor="image">Product Image</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="image_url"
+                      type="url"
+                      value={productFormData.image_url}
+                      onChange={(e) => setProductFormData({...productFormData, image_url: e.target.value})}
+                      placeholder="Or enter image URL"
+                    />
+                    <div className="relative">
+                      <Input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        disabled={uploading}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploading ? "Uploading..." : "Upload"}
+                      </Button>
+                    </div>
+                  </div>
+                  {productFormData.image_url && (
+                    <div className="mt-2">
+                      <img 
+                        src={productFormData.image_url} 
+                        alt="Preview" 
+                        className="h-20 w-20 object-cover rounded-md"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    value={productFormData.description}
+                    onChange={(e) => setProductFormData({...productFormData, description: e.target.value})}
                     placeholder="Product description..."
                     rows={3}
                   />
                 </div>
 
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  <Button type="button" variant="outline" onClick={() => setIsProductDialogOpen(false)}>
                     Cancel
                   </Button>
                   <Button type="submit" className="bg-gradient-primary">
@@ -328,121 +560,238 @@ const Admin = () => {
           </Dialog>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{products.length}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Categories</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {new Set(products.map(p => p.category)).size}
+        {/* Category Management Dialog */}
+        <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
+              <DialogDescription>
+                {editingCategory ? 'Update the category details below.' : 'Fill in the details for the new category.'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <form onSubmit={handleCategorySubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="category-name">Category Name *</Label>
+                <Input
+                  id="category-name"
+                  value={categoryFormData.name}
+                  onChange={(e) => setCategoryFormData({...categoryFormData, name: e.target.value})}
+                  placeholder="Enter category name"
+                  required
+                />
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${products.reduce((sum, p) => sum + p.price, 0).toFixed(2)}
+              
+              <div className="space-y-2">
+                <Label htmlFor="category-slug">Slug *</Label>
+                <Input
+                  id="category-slug"
+                  value={categoryFormData.slug}
+                  onChange={(e) => setCategoryFormData({...categoryFormData, slug: e.target.value})}
+                  placeholder="category-slug"
+                  required
+                />
+                <p className="text-sm text-muted-foreground">
+                  This will be used in URLs. Use lowercase letters, numbers, and hyphens only.
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Products Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Products</CardTitle>
-            <CardDescription>Manage your product inventory</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {products.length === 0 ? (
-              <div className="text-center py-8">
-                <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No products yet</h3>
-                <p className="text-muted-foreground mb-4">Get started by adding your first product</p>
-                <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-primary">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Product
+              <div className="space-y-2">
+                <Label htmlFor="category-description">Description</Label>
+                <Textarea
+                  id="category-description"
+                  value={categoryFormData.description}
+                  onChange={(e) => setCategoryFormData({...categoryFormData, description: e.target.value})}
+                  placeholder="Category description..."
+                  rows={3}
+                />
+              </div>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsCategoryDialogOpen(false)}>
+                  Cancel
                 </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <div key={product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                    <div className="flex-shrink-0">
-                      {product.image_url ? (
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="h-16 w-16 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center">
-                          <Image className="h-6 w-6 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold truncate">{product.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary">{product.category}</Badge>
-                        <span className="text-sm text-muted-foreground">
-                          Stock: {product.stock_quantity || 0}
-                        </span>
-                      </div>
-                      {product.description && (
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {product.description}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div className="flex-shrink-0 text-right">
-                      <div className="text-lg font-bold text-primary">
-                        ${product.price.toFixed(2)}
-                      </div>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(product)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDelete(product.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
+                <Button type="submit" className="bg-gradient-primary">
+                  {editingCategory ? 'Update Category' : 'Add Category'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Tabs */}
+        <Tabs defaultValue="products" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Products
+            </TabsTrigger>
+            <TabsTrigger value="categories" className="flex items-center gap-2">
+              <Tag className="h-4 w-4" />
+              Categories
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Products Tab */}
+          <TabsContent value="products">
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Management</CardTitle>
+                <CardDescription>
+                  View, edit, and manage your product inventory
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {products.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No products yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Get started by adding your first product
+                    </p>
+                    <Button onClick={() => setIsProductDialogOpen(true)} className="bg-gradient-primary">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Product
+                    </Button>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                      <Card key={product.id} className="overflow-hidden">
+                        <div className="aspect-square overflow-hidden">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="h-full w-full object-cover transition-all hover:scale-105"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-muted flex items-center justify-center">
+                              <Image className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
+                            <Badge variant={product.stock_quantity && product.stock_quantity > 0 ? "default" : "destructive"}>
+                              {product.stock_quantity && product.stock_quantity > 0 ? "In Stock" : "Out of Stock"}
+                            </Badge>
+                          </div>
+                          
+                          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                            {product.description || "No description"}
+                          </p>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="text-2xl font-bold">₦{product.price.toLocaleString()}</div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleEditProduct(product)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleDeleteProduct(product.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Categories Tab */}
+          <TabsContent value="categories">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Category Management</CardTitle>
+                  <CardDescription>
+                    Manage product categories and organization
+                  </CardDescription>
+                </div>
+                <Button 
+                  onClick={() => {
+                    resetCategoryForm();
+                    setIsCategoryDialogOpen(true);
+                  }}
+                  className="bg-gradient-primary"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Category
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {categories.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Tag className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No categories yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Create categories to organize your products
+                    </p>
+                    <Button 
+                      onClick={() => {
+                        resetCategoryForm();
+                        setIsCategoryDialogOpen(true);
+                      }}
+                      className="bg-gradient-primary"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Category
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {categories.map((category) => (
+                      <Card key={category.id} className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <h3 className="font-semibold text-lg">{category.name}</h3>
+                          <Badge variant="secondary">{category.slug}</Badge>
+                        </div>
+                        
+                        <p className="text-muted-foreground text-sm mb-4">
+                          {category.description || "No description"}
+                        </p>
+                        
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditCategory(category)}
+                            className="flex-1"
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteCategory(category.id)}
+                            className="flex-1"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
