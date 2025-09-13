@@ -39,9 +39,20 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
+    const orderDetails = items.map(item => 
+      `${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`
+    ).join('\n');
+    
+    const message = `Hi! I'd like to place an order:\n\n${orderDetails}\n\nTotal: $${total.toFixed(2)}\n\nPlease let me know how to proceed with payment and delivery. Thank you!`;
+    
+    const phoneNumber = "1234567890"; // Replace with actual WhatsApp number
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
     toast({
-      title: "Checkout",
-      description: "Checkout functionality coming soon!",
+      title: "Redirecting to WhatsApp",
+      description: "Opening WhatsApp to complete your order",
     });
   };
 

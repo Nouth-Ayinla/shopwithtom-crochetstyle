@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Grid, List, SlidersHorizontal, Heart, MessageCircle } from "lucide-react";
+import { Grid, List, SlidersHorizontal, Heart, MessageCircle, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 import { products } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Shop = () => {
   const { category } = useParams();
@@ -18,6 +20,8 @@ const Shop = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list" | "carousel">("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
+  const { addItem } = useCart();
+  const { toast } = useToast();
 
   const categories = [
     { id: "all", name: "All Products", count: products.length },
@@ -29,6 +33,20 @@ const Shop = () => {
   const handleWhatsAppContact = (product: any) => {
     const message = encodeURIComponent(product.whatsappMessage || `Hi! I'm interested in ${product.name} for $${product.price}. Is it available?`);
     window.open(`https://wa.me/+2348012345678?text=${message}`, '_blank');
+  };
+
+  const handleAddToCart = (product: typeof products[0]) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+    });
+
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart`,
+    });
   };
 
   // Filter and sort products
@@ -322,6 +340,13 @@ const Shop = () => {
                                   
                                   <div className="flex gap-1">
                                     <Button 
+                                      className="flex-1 bg-gradient-primary text-xs min-h-[36px]" 
+                                      onClick={() => handleAddToCart(product)}
+                                    >
+                                      <ShoppingBag className="h-3 w-3 mr-1" />
+                                      Add to Cart
+                                    </Button>
+                                    <Button 
                                       className="flex-1 bg-gradient-to-r from-primary to-accent text-xs min-h-[36px]" 
                                       onClick={() => handleWhatsAppContact(product)}
                                     >
@@ -392,15 +417,25 @@ const Shop = () => {
                               )}
                             </div>
                             
-                            <div className={`${viewMode === "list" ? "ml-4 flex gap-2" : ""}`}>
+                            <div className={`${viewMode === "list" ? "ml-4 flex gap-2" : "space-y-2"}`}>
                               <Button 
                                 className={`bg-gradient-primary btn-hover-lift btn-gradient-hover group ${
+                                  viewMode === "grid" ? "w-full" : "min-w-[120px]"
+                                }`}
+                                onClick={() => handleAddToCart(product)}
+                              >
+                                <ShoppingBag className="h-4 w-4 mr-2" />
+                                Add to Cart
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                className={`${
                                   viewMode === "grid" ? "w-full" : "min-w-[120px]"
                                 }`}
                                 onClick={() => handleWhatsAppContact(product)}
                               >
                                 <MessageCircle className="h-4 w-4 mr-2" />
-                                Contact on WhatsApp
+                                WhatsApp
                               </Button>
                             </div>
                           </div>
