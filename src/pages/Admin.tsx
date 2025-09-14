@@ -656,76 +656,61 @@ const Admin = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="relative">
-                    <Carousel 
-                      className="w-full"
-                      opts={{
-                        align: "start",
-                        loop: true,
-                        slidesToScroll: 1,
-                        breakpoints: {
-                          '(max-width: 768px)': {
-                            slidesToScroll: 1
-                          }
-                        }
-                      }}
-                    >
-                      <CarouselContent className="-ml-2 md:-ml-4">
-                        {products.map((product) => (
-                          <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
-                            <Card className="overflow-hidden h-full">
-                              <div className="aspect-square overflow-hidden">
-                                {product.image_url ? (
-                                  <img
-                                    src={product.image_url}
-                                    alt={product.name}
-                                    className="h-full w-full object-cover transition-all hover:scale-105"
-                                  />
-                                ) : (
-                                  <div className="h-full w-full bg-muted flex items-center justify-center">
-                                    <Image className="h-8 w-8 text-muted-foreground" />
-                                  </div>
-                                )}
-                              </div>
-                              <CardContent className="p-4">
-                                <div className="flex items-start justify-between mb-2">
-                                  <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
-                                  <Badge variant={product.stock_quantity && product.stock_quantity > 0 ? "default" : "destructive"}>
-                                    {product.stock_quantity && product.stock_quantity > 0 ? "In Stock" : "Out of Stock"}
-                                  </Badge>
-                                </div>
-                                
-                                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                                  {product.description || "No description"}
-                                </p>
-                                
-                                <div className="flex items-center justify-between">
-                                  <div className="text-2xl font-bold">₦{product.price.toLocaleString()}</div>
-                                  <div className="flex gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="icon"
-                                      onClick={() => handleEditProduct(product)}
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="icon"
-                                      onClick={() => handleDeleteProduct(product.id)}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <CarouselPrevious className="hidden sm:flex -left-12" />
-                      <CarouselNext className="hidden sm:flex -right-12" />
-                    </Carousel>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                    {products.map((product) => (
+                      <Card key={product.id} className="overflow-hidden h-full">
+                        <div className="aspect-square overflow-hidden">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="h-full w-full object-cover transition-all hover:scale-105"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-muted flex items-center justify-center">
+                              <Image className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="p-2 md:p-4">
+                          <div className="flex items-start justify-between mb-1 md:mb-2">
+                            <h3 className="font-semibold text-sm md:text-lg line-clamp-1">{product.name}</h3>
+                            <Badge 
+                              variant={product.stock_quantity && product.stock_quantity > 0 ? "default" : "destructive"}
+                              className="text-xs md:text-sm px-1 md:px-2"
+                            >
+                              {product.stock_quantity && product.stock_quantity > 0 ? "In Stock" : "Out"}
+                            </Badge>
+                          </div>
+                          
+                          <p className="text-muted-foreground text-xs md:text-sm mb-2 md:mb-3 line-clamp-1 md:line-clamp-2">
+                            {product.description || "No description"}
+                          </p>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm md:text-2xl font-bold">₦{product.price.toLocaleString()}</div>
+                            <div className="flex gap-1 md:gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-6 w-6 md:h-9 md:w-9"
+                                onClick={() => handleEditProduct(product)}
+                              >
+                                <Edit className="h-3 w-3 md:h-4 md:w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-6 w-6 md:h-9 md:w-9"
+                                onClick={() => handleDeleteProduct(product.id)}
+                              >
+                                <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 )}
               </CardContent>
