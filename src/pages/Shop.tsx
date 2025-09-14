@@ -405,9 +405,9 @@ const Shop = () => {
                     </Carousel>
                   </div>
                 ) : (
-                  <div className={`grid gap-4 ${
+                  <div className={`grid gap-3 md:gap-4 ${
                     viewMode === "grid" 
-                      ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" 
+                      ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" 
                       : "grid-cols-1"
                   }`}>
                     {filteredAndSortedProducts.map((product) => (
@@ -422,28 +422,30 @@ const Shop = () => {
                               />
                             </div>
                             {product.isNew && (
-                              <Badge className="absolute top-3 left-3 bg-accent">
+                              <Badge className={`absolute top-2 md:top-3 left-2 md:left-3 ${viewMode === "grid" ? "text-xs md:text-sm" : ""}`}>
                                 New
                               </Badge>
                             )}
                             <Button 
                               variant="ghost" 
                               size="icon" 
-                              className="absolute top-3 right-3 bg-background/80 hover:bg-background hover:scale-110 transition-all duration-200"
+                              className={`absolute top-2 md:top-3 right-2 md:right-3 bg-background/80 hover:bg-background hover:scale-110 transition-all duration-200 ${
+                                viewMode === "grid" ? "h-6 w-6 md:h-9 md:w-9" : ""
+                              }`}
                             >
-                              <Heart className="h-4 w-4" />
+                              <Heart className={`${viewMode === "grid" ? "h-3 w-3 md:h-4 md:w-4" : "h-4 w-4"}`} />
                             </Button>
                           </div>
                           
-                          <div className={`${viewMode === "grid" ? "p-6" : "p-4 flex items-center justify-between"}`}>
+                          <div className={`${viewMode === "grid" ? "p-2 md:p-6" : "p-4 flex items-center justify-between"}`}>
                             <div className={viewMode === "list" ? "flex-1" : ""}>
                               <h3 className={`font-semibold group-hover:text-primary transition-colors duration-300 ${
-                                viewMode === "grid" ? "text-lg mb-2" : "text-base mb-1"
+                                viewMode === "grid" ? "text-sm md:text-lg mb-1 md:mb-2 line-clamp-1 md:line-clamp-none" : "text-base mb-1"
                               }`}>
                                 {product.name}
                               </h3>
                               <p className={`font-bold text-primary ${
-                                viewMode === "grid" ? "text-2xl mb-4" : "text-xl"
+                                viewMode === "grid" ? "text-base md:text-2xl mb-2 md:mb-4" : "text-xl"
                               }`}>
                                 ₦{product.price.toLocaleString()}
                               </p>
@@ -457,12 +459,13 @@ const Shop = () => {
                             <div className={`${viewMode === "list" ? "ml-4 flex gap-2" : "space-y-2"}`}>
                               <Button 
                                 className={`bg-gradient-primary btn-hover-lift btn-gradient-hover group ${
-                                  viewMode === "grid" ? "w-full" : "min-w-[120px]"
+                                  viewMode === "grid" ? "w-full text-xs md:text-sm min-h-[32px] md:min-h-[40px]" : "min-w-[120px]"
                                 }`}
                                 onClick={() => handleAddToCart(product)}
                               >
-                                <ShoppingBag className="h-4 w-4 mr-2" />
-                                Add to Cart
+                                <ShoppingBag className={`mr-1 md:mr-2 ${viewMode === "grid" ? "h-3 w-3 md:h-4 md:w-4" : "h-4 w-4"}`} />
+                                <span className={viewMode === "grid" ? "hidden sm:inline" : ""}>Add to Cart</span>
+                                <span className={viewMode === "grid" ? "sm:hidden" : "hidden"}>Add</span>
                               </Button>
                               
                             </div>
