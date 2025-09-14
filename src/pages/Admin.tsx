@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Package, DollarSign, Image, FileText, Tag, Upload } from "lucide-react";
+import { Plus, Trash2, Edit, Package, DollarSign, Image, FileText, Tag, Upload, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -655,57 +656,63 @@ const Admin = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {products.map((product) => (
-                      <Card key={product.id} className="overflow-hidden">
-                        <div className="aspect-square overflow-hidden">
-                          {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt={product.name}
-                              className="h-full w-full object-cover transition-all hover:scale-105"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-muted flex items-center justify-center">
-                              <Image className="h-8 w-8 text-muted-foreground" />
+                  <Carousel className="w-full">
+                    <CarouselContent className="-ml-2 md:-ml-4">
+                      {products.map((product) => (
+                        <CarouselItem key={product.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                          <Card className="overflow-hidden h-full">
+                            <div className="aspect-square overflow-hidden">
+                              {product.image_url ? (
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  className="h-full w-full object-cover transition-all hover:scale-105"
+                                />
+                              ) : (
+                                <div className="h-full w-full bg-muted flex items-center justify-center">
+                                  <Image className="h-8 w-8 text-muted-foreground" />
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
-                            <Badge variant={product.stock_quantity && product.stock_quantity > 0 ? "default" : "destructive"}>
-                              {product.stock_quantity && product.stock_quantity > 0 ? "In Stock" : "Out of Stock"}
-                            </Badge>
-                          </div>
-                          
-                          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                            {product.description || "No description"}
-                          </p>
-                          
-                          <div className="flex items-center justify-between">
-                            <div className="text-2xl font-bold">₦{product.price.toLocaleString()}</div>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleEditProduct(product)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleDeleteProduct(product.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between mb-2">
+                                <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
+                                <Badge variant={product.stock_quantity && product.stock_quantity > 0 ? "default" : "destructive"}>
+                                  {product.stock_quantity && product.stock_quantity > 0 ? "In Stock" : "Out of Stock"}
+                                </Badge>
+                              </div>
+                              
+                              <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                                {product.description || "No description"}
+                              </p>
+                              
+                              <div className="flex items-center justify-between">
+                                <div className="text-2xl font-bold">₦{product.price.toLocaleString()}</div>
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => handleEditProduct(product)}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => handleDeleteProduct(product.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="-left-12" />
+                    <CarouselNext className="-right-12" />
+                  </Carousel>
                 )}
               </CardContent>
             </Card>
