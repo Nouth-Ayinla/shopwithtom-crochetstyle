@@ -37,7 +37,7 @@ const Footer = () => {
         <div className="text-center space-y-8">
           {/* Copyright */}
           <div>
-            <p className="text-white text-lg font-medium">
+            <p className="text-black text-lg font-medium">
               © 2025 Shop With Tom. All rights reserved.
             </p>
           </div>
@@ -52,7 +52,7 @@ const Footer = () => {
                   variant="ghost"
                   size="icon"
                   asChild
-                  className="text-white hover:text-white/80 transition-colors"
+                  className="text-black hover:text-orange/80 transition-colors"
                 >
                   <a
                     href={social.url}
