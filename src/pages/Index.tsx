@@ -150,7 +150,7 @@ const Index = () => {
                       <span className="text-sm text-muted-foreground ml-2">({product.reviews})</span>
                     </div>
                     <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors duration-300">{product.name}</h3>
-                    <p className="text-2xl font-bold text-primary mb-4">${product.price}</p>
+                    <p className="text-2xl font-bold text-primary mb-4">₦{product.price.toLocaleString()}</p>
                     <Button className= "border-white text-black hover:bg-white hover:text-primary text-lg px-8 py-6 btn-hover-lift" asChild >
                       <Link to={`/product/${product.id}`}>
                         <ShoppingBag className="h-4 w-4 mr-2" />
@@ -216,7 +216,7 @@ const Index = () => {
                           <h3 className="font-semibold text-base mb-2 group-hover:text-primary transition-colors duration-300">
                             {product.name}
                           </h3>
-                          <p className="text-xl font-bold text-primary mb-3">${product.price}</p>
+                          <p className="text-xl font-bold text-primary mb-3">₦{product.price.toLocaleString()}</p>
                           
                           <Button className="w-full bg-gradient-primary btn-hover-lift text-sm min-h-[44px]" asChild>
                             <Link to={`/product/${product.id}`}>
@@ -308,7 +308,7 @@ const Index = () => {
               </div>
               <h3 className="font-semibold text-xl mb-2">Fast & Free Shipping</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Free shipping on all orders over $75. Your new favorite pieces delivered quickly and safely.
+                Free shipping on all orders over ₦50,000. Your new favorite pieces delivered quickly and safely.
               </p>
             </div>
           </div>

@@ -157,7 +157,7 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  We offer free shipping on orders over $75. Standard shipping takes 3-5 business days, 
+                  We offer free shipping on orders over ₦50,000. Standard shipping takes 3-5 business days, 
                   while express shipping arrives in 1-2 business days.
                 </p>
               </CardContent>

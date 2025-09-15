@@ -179,7 +179,7 @@ const Lookbook = () => {
                                   <div key={product.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                                     <div>
                                       <p className="font-medium">{product.name}</p>
-                                      <p className="text-sm text-muted-foreground">${product.price}</p>
+                                      <p className="text-sm text-muted-foreground">₦{product.price.toLocaleString()}</p>
                                     </div>
                                     <Button size="sm" asChild>
                                       <Link to={`/product/${product.id}`}>
@@ -277,7 +277,7 @@ const Lookbook = () => {
                                         <div key={product.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                                           <div>
                                             <p className="font-medium">{product.name}</p>
-                                            <p className="text-sm text-muted-foreground">${product.price}</p>
+                                            <p className="text-sm text-muted-foreground">₦{product.price.toLocaleString()}</p>
                                           </div>
                                           <Button size="sm" asChild>
                                             <Link to={`/product/${product.id}`}>

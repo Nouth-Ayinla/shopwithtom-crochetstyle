@@ -79,7 +79,7 @@ const ProductDetail = () => {
               <h1 className="text-3xl md:text-4xl font-bold mb-4">{product.name}</h1>
               
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-primary">₦{product.price.toLocaleString()}</span>
               </div>
             </div>
 
@@ -115,7 +115,7 @@ const ProductDetail = () => {
               <div className="text-center py-2">
                 <Truck className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
                 <p className="text-sm font-medium">Free Shipping</p>
-                <p className="text-xs text-muted-foreground">Orders over $75</p>
+                <p className="text-xs text-muted-foreground">Orders over ₦50,000</p>
               </div>
               <div className="text-center py-2">
                 <RotateCcw className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-primary" />
@@ -159,7 +159,7 @@ const ProductDetail = () => {
             <TabsContent value="shipping" className="mt-8">
               <div>
                 <h3 className="text-lg font-semibold mb-3">Shipping Information</h3>
-                <p className="text-muted-foreground leading-relaxed">Free shipping on orders over $75. Standard delivery in 3-5 business days.</p>
+                <p className="text-muted-foreground leading-relaxed">Free shipping on orders over ₦50,000. Standard delivery in 3-5 business days.</p>
               </div>
             </TabsContent>
           </Tabs>
@@ -181,7 +181,7 @@ const ProductDetail = () => {
                     </div>
                     <div className="p-6">
                       <h3 className="font-semibold text-lg mb-2">{relatedProduct.name}</h3>
-                      <p className="text-2xl font-bold text-primary">${relatedProduct.price.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-primary">₦{relatedProduct.price.toLocaleString()}</p>
                       <Button className="w-full mt-4 bg-gradient-primary">
                         View Details
                       </Button>

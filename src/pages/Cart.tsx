@@ -40,10 +40,10 @@ const Cart = () => {
 
   const handleCheckout = () => {
     const orderDetails = items.map(item => 
-      `${item.name} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`
+      `${item.name} - ₦${item.price} x ${item.quantity} = ₦${(item.price * item.quantity).toFixed(2)}`
     ).join('\n');
     
-    const message = `Hi! I'd like to place an order:\n\n${orderDetails}\n\nTotal: $${total.toFixed(2)}\n\nPlease let me know how to proceed with payment and delivery. Thank you!`;
+    const message = `Hi! I'd like to place an order:\n\n${orderDetails}\n\nTotal: ₦${total.toFixed(2)}\n\nPlease let me know how to proceed with payment and delivery. Thank you!`;
     
     const phoneNumber = "1234567890"; // Replace with actual WhatsApp number
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -167,9 +167,9 @@ const Cart = () => {
                             </Button>
                           </div>
                           <div className="text-right">
-                            <p className="font-semibold text-lg">${(item.price * item.quantity).toFixed(2)}</p>
+                            <p className="font-semibold text-lg">₦{(item.price * item.quantity).toFixed(2)}</p>
                             {item.quantity > 1 && (
-                              <p className="text-sm text-muted-foreground">${item.price} each</p>
+                              <p className="text-sm text-muted-foreground">₦{item.price} each</p>
                             )}
                           </div>
                         </div>
@@ -186,22 +186,22 @@ const Cart = () => {
                 <CardContent className="p-6 space-y-4">
                   <h2 className="text-xl font-semibold">Order Summary</h2>
                   
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal ({itemCount} items)</span>
-                      <span>${total.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span className="text-accent">Free</span>
-                    </div>
-                    <div className="border-t pt-2">
-                      <div className="flex justify-between font-semibold text-lg">
-                        <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span>Subtotal ({itemCount} items)</span>
+                        <span>₦{total.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Shipping</span>
+                        <span className="text-accent">Free</span>
+                      </div>
+                      <div className="border-t pt-2">
+                        <div className="flex justify-between font-semibold text-lg">
+                          <span>Total</span>
+                          <span>₦{total.toFixed(2)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
                   <Button
                     size="lg"
@@ -221,7 +221,7 @@ const Cart = () => {
                   </Button>
 
                   <div className="text-center text-sm text-muted-foreground mt-4">
-                    <p>Free shipping on orders over $75</p>
+                    <p>Free shipping on orders over ₦50,000</p>
                     <p>Easy returns within 30 days</p>
                   </div>
                 </CardContent>
